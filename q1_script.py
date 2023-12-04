@@ -6,7 +6,7 @@ def read_pixels(data_path):
     with gzip.open(data_path) as f:
         pixel_data = np.frombuffer(f.read(), 'B', offset=16).astype('float32')
     normalized_pixels = pixel_data / 255
-    flattened_pixels = None # TODO: Flatten the normalized pixels
+    flattened_pixels = normalized_pixels.reshape(-1, 28*28)
     return flattened_pixels
 
 # Function to read label data from the dataset
