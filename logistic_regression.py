@@ -1,3 +1,4 @@
+from enum import Enum
 import numpy as np
 from confusion_matrix import ConfusionMatrix
 
@@ -22,6 +23,13 @@ def get_confusion_matrix(
     return confusion_matrix
 
 
+class WeightSelectionStrategy(Enum):
+    GAUSIAN = "gausian"
+    UNIFORM = "uniform"
+    ZERO = "zero"
+    NORMAL = "normal"
+
+
 class LogisticRegression:
     EPOCHS: int = 100
     learning_rate: float
@@ -39,17 +47,37 @@ class LogisticRegression:
         learning_rate: float = 5 * 10**-4,
         batch_size: int = 200,
         reqularization_coeficient: float = 10**-4,
+        weight_strategy: WeightSelectionStrategy = WeightSelectionStrategy.GAUSIAN,
     ):
         self.__y_training = y_training
         self.__X_training = X_training
         self.learning_rate = learning_rate
         self.batch_size = batch_size
         self.reqularization_coeficient = reqularization_coeficient
-        self.__weights = np.random.normal(
-            0, 1, size=(self.__feature_count, self.__class_count)
-        )
         self.__biases = np.zeros(self.__class_count)
+        self.__initialize_weights(weight_strategy)
 
+    def __initialize_weights(self, weight_strategy: WeightSelectionStrategy):
+        if weight_strategy == WeightSelectionStrategy.GAUSIAN:
+            self.__weights = np.random.normal(
+                0, 1, size=(self.__feature_count, self.__class_count)
+            )
+        elif weight_strategy == WeightSelectionStrategy.UNIFORM:
+            self.__weights = np.random.uniform(
+                low=0, high=1, size=(self.__feature_count, self.__class_count)
+            )
+        elif weight_strategy == WeightSelectionStrategy.ZERO:
+            self.__weights = np.zeros((self.__feature_count, self.__class_count))
+        elif weight_strategy == WeightSelectionStrategy.NORMAL:
+            self.__weights = np.random.normal(
+                0, 1, size=(self.__feature_count, self.__class_count)
+            )
+        else:
+            raise Exception("Invalid weight selection strategy")
+
+    def get_weights(self):
+        return self.__weights
+    
     @property
     def __feature_count(self):
         return self.__X_training.shape[1]
