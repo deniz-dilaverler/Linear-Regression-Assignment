@@ -220,6 +220,7 @@ def question_2_345():
     
 
 
-question_2_1()
-question_2_2()
-question_2_345()
+def question_2():
+    question_2_1()
+    question_2_2()
+    question_2_345()
